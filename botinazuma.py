@@ -1,8 +1,26 @@
 import os
+import threading
+from flask import Flask
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-# Il tuo token ufficiale del bot
+# --- CONFIGURAZIONE SERVER WEB (Per mantenere attivo il bot gratis su Render) ---
+app_web = Flask(__name__)
+
+@app_web.route('/')
+def home():
+    return "Il bot di Inazuma Eleven è attivo e online!"
+
+def run_web():
+    # Render assegna una porta automatica tramite la variabile d'ambiente PORT
+    port = int(os.environ.get("PORT", 10000))
+    app_web.run(host="0.0.0.0", port=port)
+
+# Avvia il server web in background in modo che Render trovi la porta aperta
+threading.Thread(target=run_web).start()
+
+
+# --- CODICE DEL BOT TELEGRAM ---
 TOKEN = "8835515472:AAE8Iys5siGYRj9-titnQJi14auxEWrrA-c"
 
 # Funzione per il comando /start e /comandi
@@ -17,7 +35,7 @@ async def mostra_comandi(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/sito - Link utile per Inazuma Eleven"
     )
 
-# Funzione generica per inviare le immagini delle tier list (cerca direttamente nella cartella del bot)
+# Funzione generica per inviare le immagini delle tier list
 async def invia_tierlist(update: Update, context: ContextTypes.DEFAULT_TYPE, nome_file: str, ruolo: str):
     if os.path.exists(nome_file):
         with open(nome_file, 'rb') as foto:
@@ -40,7 +58,7 @@ async def tiermf(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def tierfw(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await invia_tierlist(update, context, "attaccanti.jpg", "Attaccanti")
 
-# Funzione per il comando /sito con il link corretto
+# Funzione per il comando /sito
 async def invia_sito(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Ecco il link utile per il gioco di Inazuma:\n"
