@@ -17,16 +17,14 @@ async def mostra_comandi(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/sito - Link utile per Inazuma Eleven"
     )
 
-# Funzione generica per inviare le immagini delle tier list
+# Funzione generica per inviare le immagini delle tier list (cerca direttamente nella cartella del bot)
 async def invia_tierlist(update: Update, context: ContextTypes.DEFAULT_TYPE, nome_file: str, ruolo: str):
-    percorso_foto = f"/storage/emulated/0/Download/{nome_file}"
-    
-    if os.path.exists(percorso_foto):
-        with open(percorso_foto, 'rb') as foto:
+    if os.path.exists(nome_file):
+        with open(nome_file, 'rb') as foto:
             await update.message.reply_photo(photo=foto, caption=f"Ecco la tier list dei {ruolo}!")
     else:
         await update.message.reply_text(
-            f"Attenzione: Non ho trovato il file '{nome_file}' nella cartella Download del dispositivo."
+            f"Attenzione: Non ho trovato il file '{nome_file}' nella cartella del bot."
         )
 
 # Funzioni specifiche per ogni comando tier list
@@ -42,7 +40,7 @@ async def tiermf(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def tierfw(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await invia_tierlist(update, context, "attaccanti.jpg", "Attaccanti")
 
-# Funzione per il comando /sito con il link aggiornato
+# Funzione per il comando /sito con il link corretto
 async def invia_sito(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Ecco il link utile per il gioco di Inazuma:\n"
